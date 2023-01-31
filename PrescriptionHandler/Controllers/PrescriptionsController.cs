@@ -12,6 +12,7 @@ namespace PrescriptionHandler.Controllers
     public class PrescriptionsController : ControllerBase
     {
 
+
         private IDatabaseService _databaseService;
 
         public PrescriptionsController(IDatabaseService databaseService)

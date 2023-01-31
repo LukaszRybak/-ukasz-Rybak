@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PrescriptionHandler.Models.Authentication;
 
 namespace PrescriptionHandler.Models
 {
@@ -17,21 +18,58 @@ namespace PrescriptionHandler.Models
 
         }
 
+        public DbSet<AppUser> Users { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<PrescriptionMedicament> PrescriptionMedicaments { get; set; }
         public DbSet<Medicament> Medicaments { get; set; }
 
+        //>to do: test if its still required
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseSqlServer(_configuration.GetConnectionString("ProductionDb"));
         }
 
+        //<
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<AppUser>(opt =>
+            {
+                opt.HasKey(u => u.IdUser);
+                opt.Property(u => u.IdUser).ValueGeneratedOnAdd();
+
+                opt.Property(u => u.Login).IsRequired().HasMaxLength(100);
+                opt.Property(u => u.Email).IsRequired().HasMaxLength(100);
+                opt.Property(u => u.Password).IsRequired().HasMaxLength(100);
+                opt.Property(u => u.Salt).IsRequired().HasMaxLength(100);
+                opt.Property(u => u.RefreshToken).IsRequired().HasMaxLength(255);
+                opt.Property(u => u.RefreshTokenExp).HasColumnType("datetime");
+
+
+                opt.HasData(
+                        new AppUser {
+                            IdUser = 1,
+                            Login = "JonDoe",
+                            Email = "Jon@wp.pl",
+                            Password = "ToBeHashed",
+                            Salt = "generatedSalt",
+                            RefreshToken = "generatedRefreshToken",
+                            RefreshTokenExp = new DateTime(2000, 4, 20)
+                        }
+                    );
+
+            });
+
+
+
+
+
+
 
             modelBuilder.Entity<Doctor>(opt =>
             {
